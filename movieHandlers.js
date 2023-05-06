@@ -28,9 +28,33 @@ const movies = [
 const database = require("./database");
 
 const getMovies = (req, res) => {
-  
+  const initialSql = "SELECT * FROM movies";
+  const where = [];
+
+  if (req.query.color != null) {
+   where.push({
+    column: "color",
+    value: req.query.color,
+    operator: "=",
+   });
+  }
+
+  if (req.query.max_duration != null) {
+    where.push({
+      column: "duration",
+      value: req.query.max_duration,
+      operator: "<=",
+     });
+  }
+
   database
-    .query("select * from movies")
+    .query(
+      where.reduce(
+      (sql, { column , operator }, index) =>
+      `${sql} ${index === 0 ? "where" : "and"} ${column} ${operator} ?`, initialSql
+      ),
+      where.map(({ value }) => value)
+    )
     .then(([movies]) => {
       res.json(movies);
     })
@@ -62,9 +86,34 @@ const getMovieById = (req, res) => {
 
 
   const getUsers = (req, res) => {
+
+    const initialSql = "SELECT * FROM users";
+    const where = [];
+  
+    if (req.query.language != null) {
+     where.push({
+      column: "language",
+      value: req.query.language,
+      operator: "=",
+     });
+    }
+  
+    if (req.query.city != null) {
+      where.push({
+        column: "city",
+        value: req.query.city,
+        operator: "=",
+       });
+    }
   
     database
-      .query("select * from users")
+    .query(
+      where.reduce(
+      (sql, { column , operator }, index) =>
+      `${sql} ${index === 0 ? "where" : "and"} ${column} ${operator} ?`, initialSql
+      ),
+      where.map(({ value }) => value)
+    )
       .then(([users]) => {
         res.json(users);
       })
