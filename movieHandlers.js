@@ -125,6 +125,40 @@ const getMovieById = (req, res) => {
     })
   };
 
+  const updateMovie = (req,res) => {
+    const id = parseInt(req.params.id);
+    const { title, director, year, color, duration } = req.body;
+
+    database.query(
+      "update movies SET title=?, director=?, year=?, color=?, duration=? WHERE id=?",
+      [title, director, year, color, duration, id]
+    )
+    .then(([result]) => {
+      result.affectedRows === 0 ? res.status(404).send("Not Found"): res.sendStatus(204);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error editing the movie");
+    })
+  };
+
+  const updateUser = (req,res) => {
+    const id = parseInt(req.params.id);
+    const { firstname, lastname, email, city, language } = req.body;
+
+    database.query(
+      "update users SET firstname=?, lastname=?, email=?, city=?, language=? WHERE id=?",
+      [firstname, lastname, email, city, language, id]
+    )
+    .then(([result]) => {
+      result.affectedRows === 0 ? res.status(404).send("Not Found"): res.sendStatus(204);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error editing the user");
+    })
+  };
+
 
 
 
@@ -136,4 +170,6 @@ module.exports = {
   getUserById,
   postMovie,
   postUser,
+  updateMovie,
+  updateUser,
 };
